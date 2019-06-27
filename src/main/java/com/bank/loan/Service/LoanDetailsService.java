@@ -11,4 +11,6 @@ public interface LoanDetailsService {
 	public LoanDetails fetchById(int id, String status);
 
 	public List<LoanDetails> findAll(String status);
+
+	public String deleteRecord(int id, String status);
 }

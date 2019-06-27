@@ -18,7 +18,7 @@ public class LoanDetailsServiceImpl implements LoanDetailsService {
 	@Override
 	public LoanDetails createLoan(LoanDetails loanDetails) throws ApplicatIonException {
 
-		if (loanDetails.getLoanAccNum() < 0 && loanDetails.getLoanStatus() == "Rejected") {
+		if (loanDetails.getLoanAccNum() < 0 && loanDetails.getLoanStatus() == "Rejected" && loanDetails.getLoanStatus() == "approved") {
 			throw new ApplicatIonException("you are not qualified Customer");
 		} else {
 			loanDetails = loanRepository.save(loanDetails);
@@ -32,7 +32,7 @@ public class LoanDetailsServiceImpl implements LoanDetailsService {
 		System.out.println("loan service");
 		LoanDetails loanDetails = loanRepository.findById(id);
 		System.out.println("first  " + loanDetails);
-		if (loanDetails.getLoanAmount() <= loanDetails.getSecurityValue()) {
+		if ((loanDetails.getLoanAmount()*2) <= loanDetails.getSecurityValue()) {
 			if (loanDetails.getCustomerDetails().getCustCreditScore() > 600) {
 				if (loanDetails.getCustomerDetails().getCustAge() >= 24
 						&& loanDetails.getCustomerDetails().getCustAge() <= 60) {
@@ -48,14 +48,16 @@ public class LoanDetailsServiceImpl implements LoanDetailsService {
 					 loanRepository.save(loanDetails);
 				} else {
 					loanDetails.setLoanStatus("rejected");
+					loanRepository.save(loanDetails);
 				}
 			} else {
 				loanDetails.setLoanStatus("rejected");
+				loanRepository.save(loanDetails);
 			}
 		} else {
 			loanDetails.setLoanStatus("rejected");
+			loanRepository.save(loanDetails);
 		}
-		System.out.println("second  " + loanDetails);
 		return loanDetails;
 
 	}
@@ -63,6 +65,23 @@ public class LoanDetailsServiceImpl implements LoanDetailsService {
 	@Override
 	public List<LoanDetails> findAll(String status) {
 		return loanRepository.findByStatus(status);
+	}
+
+	@Override
+	public String deleteRecord(int id, String status) {
+		
+		LoanDetails loanDetails = loanRepository.findById(id);
+		System.out.println(loanDetails);
+		if(loanDetails!=null) {
+		if(loanDetails.getLoanStatus().equalsIgnoreCase("rejected")) {
+			loanRepository.deleteById(id);
+			return "record delete successfully....";
+		}
+		}
+		else {
+			return "entered id is not availble....";
+		}
+		return "loanDetails";
 	}
 
 }
